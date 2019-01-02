@@ -139,20 +139,20 @@ class List(Tag):
 class Compound(Tag):
     def __init__(self, name):
         self.name = name
-        self.value = []
+        self.value = {}
 
     def read(self, f):
-        self.value = []
+        self.value = {}
         while True:
             item = read(f)
             if isinstance(item, End):
                 break
             else:
-                self.value.append(item)
+                self.value[item.name] = item
 
     def dump(self):
         data = {}
-        for item in self.value:
+        for _, item in self.value.items():
             data[item.name] = item.dump()
 
         return data
