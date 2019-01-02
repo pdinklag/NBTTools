@@ -11,8 +11,15 @@ parser = argparse.ArgumentParser(description='Minecraft NBT dump')
 parser.add_argument('file')
 args = parser.parse_args()
 
-# Read NBT file and dump as JSON
-with gzip.open(args.file, 'rb') as f:
+def nbtdump(f):
     data = nbt.read(f)
     print(json.dumps(data.dump(), indent=4))
 
+# Read NBT file and dump as JSON
+try:
+    with gzip.open(args.file, 'rb') as f:
+        nbtdump(f)
+except OSError:
+    # not gzipped
+    with open(args.file, 'rb') as f:
+        nbtdump(f)
