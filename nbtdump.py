@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 def nbtdump(f):
     data = nbt.read(f)
-    print(json.dumps(data.dump(), indent=4))
+    print(json.dumps(data.dump(), indent=4, sort_keys=True))
 
 # Read NBT file and dump as JSON
 try:
