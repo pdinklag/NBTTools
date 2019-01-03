@@ -43,7 +43,7 @@ class Tag:
 
 # 0x00
 class End(Tag):
-    def __init__(self, name = ''):
+    def __init__(self):
         self.id = ID_END
 
     def read(self, f):
@@ -54,9 +54,8 @@ class End(Tag):
 
 # 0x01
 class Byte(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_BYTE
-        self.name = name
         self.value = 0
 
     def read(self, f):
@@ -67,9 +66,8 @@ class Byte(Tag):
 
 # 0x02
 class Short(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_SHORT
-        self.name = name
         self.value = 0
 
     def read(self, f):
@@ -80,9 +78,8 @@ class Short(Tag):
 
 # 0x03
 class Int(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_INT
-        self.name = name
         self.value = 0
 
     def read(self, f):
@@ -93,9 +90,8 @@ class Int(Tag):
 
 # 0x04
 class Long(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_LONG
-        self.name = name
         self.value = 0
 
     def read(self, f):
@@ -106,9 +102,8 @@ class Long(Tag):
 
 # 0x05
 class Float(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_FLOAT
-        self.name = name
         self.value = 0
 
     def read(self, f):
@@ -119,9 +114,8 @@ class Float(Tag):
 
 # 0x06
 class Double(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_DOUBLE
-        self.name = name
         self.value = 0
 
     def read(self, f):
@@ -132,9 +126,8 @@ class Double(Tag):
 
 # 0x07
 class ByteArray(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_BYTE_ARRAY
-        self.name = name
         self.value = []
 
     def read(self, f):
@@ -152,9 +145,8 @@ class ByteArray(Tag):
 
 # 0x08
 class String(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_STRING
-        self.name = name
         self.value = ''
 
     def read(self, f):
@@ -165,11 +157,10 @@ class String(Tag):
 
 # 0x09
 class List(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_LIST
-        self.name = name
-        self.value = []
         self.itemTypeId = ID_END
+        self.value = []
 
     def read(self, f):
         self.value = []
@@ -206,23 +197,22 @@ class List(Tag):
 
 # 0x0A
 class Compound(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_COMPOUND
-        self.name = name
         self.value = {}
 
     def read(self, f):
         self.value = {}
         while True:
-            item = read(f)
+            (item, name) = read(f)
             if isinstance(item, End):
                 break
             else:
-                self.value[item.name] = item
+                self.value[name] = item
 
     def write(self, f):
-        for _, item in self.value.items():
-            write(f, item)
+        for name, item in self.value.items():
+            write(f, item, name)
 
         write(f, End())
 
@@ -238,16 +228,15 @@ class Compound(Tag):
 
     def dump(self):
         data = {}
-        for _, item in self.value.items():
-            data[item.name] = item.dump()
+        for name, item in self.value.items():
+            data[name] = item.dump()
 
         return data
 
 # 0x0B
 class IntArray(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_INT_ARRAY
-        self.name = name
         self.value = []
 
     def read(self, f):
@@ -264,9 +253,8 @@ class IntArray(Tag):
             f.write(struct.pack('>i', i))
 # 0x0C
 class LongArray(Tag):
-    def __init__(self, name):
+    def __init__(self):
         self.id = ID_LONG_ARRAY
-        self.name = name
         self.value = []
 
     def read(self, f):
@@ -283,20 +271,20 @@ class LongArray(Tag):
             f.write(struct.pack('>q', l))
 
 # get NBT from id
-def create(tagId, name = ''):
-    if tagId == ID_END:          return End(name)
-    elif tagId == ID_BYTE:       return Byte(name)
-    elif tagId == ID_SHORT:      return Short(name)
-    elif tagId == ID_INT:        return Int(name)
-    elif tagId == ID_LONG:       return Long(name)
-    elif tagId == ID_FLOAT:      return Float(name)
-    elif tagId == ID_DOUBLE:     return Double(name)
-    elif tagId == ID_BYTE_ARRAY: return ByteArray(name)
-    elif tagId == ID_STRING:     return String(name)
-    elif tagId == ID_LIST:       return List(name)
-    elif tagId == ID_COMPOUND:   return Compound(name)
-    elif tagId == ID_INT_ARRAY:  return IntArray(name)
-    elif tagId == ID_LONG_ARRAY: return LongArray(name)
+def create(tagId):
+    if tagId == ID_END:          return End()
+    elif tagId == ID_BYTE:       return Byte()
+    elif tagId == ID_SHORT:      return Short()
+    elif tagId == ID_INT:        return Int()
+    elif tagId == ID_LONG:       return Long()
+    elif tagId == ID_FLOAT:      return Float()
+    elif tagId == ID_DOUBLE:     return Double()
+    elif tagId == ID_BYTE_ARRAY: return ByteArray()
+    elif tagId == ID_STRING:     return String()
+    elif tagId == ID_LIST:       return List()
+    elif tagId == ID_COMPOUND:   return Compound()
+    elif tagId == ID_INT_ARRAY:  return IntArray()
+    elif tagId == ID_LONG_ARRAY: return LongArray()
     else: raise NBTException('invalid tag id ' + str(tagId))
 
 # read NBT
@@ -306,14 +294,14 @@ def read(f):
     if tagId > ID_END:
         name = read_str(f)
 
-    tag = create(tagId, name)
+    tag = create(tagId)
     tag.read(f)
-    return tag
+    return (tag, name)
 
 # write NBT
-def write(f, tag):
+def write(f, tag, name = ''):
     f.write(struct.pack('b', tag.id))
     if tag.id > ID_END:
-        write_str(f, tag.name)
+        write_str(f, name)
 
     tag.write(f)
