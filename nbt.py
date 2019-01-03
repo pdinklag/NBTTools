@@ -32,6 +32,10 @@ def write_str(f, str):
 
 # base
 class Tag:
+    def __init__(self, id, value):
+        self.id = id
+        self.value = value
+
     def __str__(self):
         return type(self).__name__ + '(' + str(self.value) + ')'
 
@@ -50,7 +54,7 @@ class Tag:
 # 0x00
 class End(Tag):
     def __init__(self):
-        self.id = ID_END
+        Tag.__init__(self, ID_END, False)
 
     def __str__(self):
         return 'End()'
@@ -63,9 +67,8 @@ class End(Tag):
 
 # 0x01
 class Byte(Tag):
-    def __init__(self):
-        self.id = ID_BYTE
-        self.value = 0
+    def __init__(self, value = 0):
+        Tag.__init__(self, ID_BYTE, value)
 
     def read(self, f):
         self.value = struct.unpack('b', f.read(1))[0]
@@ -75,9 +78,8 @@ class Byte(Tag):
 
 # 0x02
 class Short(Tag):
-    def __init__(self):
-        self.id = ID_SHORT
-        self.value = 0
+    def __init__(self, value = 0):
+        Tag.__init__(self, ID_SHORT, value)
 
     def read(self, f):
         self.value = struct.unpack('>h', f.read(2))[0]
@@ -87,9 +89,8 @@ class Short(Tag):
 
 # 0x03
 class Int(Tag):
-    def __init__(self):
-        self.id = ID_INT
-        self.value = 0
+    def __init__(self, value = 0):
+        Tag.__init__(self, ID_INT, value)
 
     def read(self, f):
         self.value = struct.unpack('>i', f.read(4))[0]
@@ -99,9 +100,8 @@ class Int(Tag):
 
 # 0x04
 class Long(Tag):
-    def __init__(self):
-        self.id = ID_LONG
-        self.value = 0
+    def __init__(self, value = 0):
+        Tag.__init__(self, ID_LONG, value)
 
     def read(self, f):
         self.value = struct.unpack('>q', f.read(8))[0]
@@ -111,9 +111,8 @@ class Long(Tag):
 
 # 0x05
 class Float(Tag):
-    def __init__(self):
-        self.id = ID_FLOAT
-        self.value = 0
+    def __init__(self, value = 0.0):
+        Tag.__init__(self, ID_FLOAT, value)
 
     def read(self, f):
         self.value = struct.unpack('>f', f.read(4))[0]
@@ -123,9 +122,8 @@ class Float(Tag):
 
 # 0x06
 class Double(Tag):
-    def __init__(self):
-        self.id = ID_DOUBLE
-        self.value = 0
+    def __init__(self, value = 0.0):
+        Tag.__init__(self, ID_DOUBLE, value)
 
     def read(self, f):
         self.value = struct.unpack('>d', f.read(8))[0]
@@ -135,9 +133,8 @@ class Double(Tag):
 
 # 0x07
 class ByteArray(Tag):
-    def __init__(self):
-        self.id = ID_BYTE_ARRAY
-        self.value = []
+    def __init__(self, value = []):
+        Tag.__init__(self, ID_BYTE_ARRAY, value)
 
     def read(self, f):
         self.value = []
@@ -154,9 +151,11 @@ class ByteArray(Tag):
 
 # 0x08
 class String(Tag):
-    def __init__(self):
-        self.id = ID_STRING
-        self.value = ''
+    def __init__(self, value = ''):
+        Tag.__init__(self, ID_STRING, value)
+
+    def __str__(self):
+        return 'String(\'' + str(self.value) + '\')'
 
     def read(self, f):
         self.value = read_str(f)
@@ -166,10 +165,9 @@ class String(Tag):
 
 # 0x09
 class List(Tag):
-    def __init__(self):
-        self.id = ID_LIST
-        self.itemTypeId = ID_END
-        self.value = []
+    def __init__(self, itemTypeId = ID_END, value = []):
+        Tag.__init__(self, ID_LIST, value)
+        self.itemTypeId = itemTypeId
 
     def read(self, f):
         self.value = []
@@ -206,9 +204,8 @@ class List(Tag):
 
 # 0x0A
 class Compound(Tag):
-    def __init__(self):
-        self.id = ID_COMPOUND
-        self.value = {}
+    def __init__(self, value = {}):
+        Tag.__init__(self, ID_COMPOUND, value)
 
     def read(self, f):
         self.value = {}
@@ -244,9 +241,8 @@ class Compound(Tag):
 
 # 0x0B
 class IntArray(Tag):
-    def __init__(self):
-        self.id = ID_INT_ARRAY
-        self.value = []
+    def __init__(self, value = []):
+        Tag.__init__(self, ID_INT_ARRAY, value)
 
     def read(self, f):
         self.value = []
@@ -262,9 +258,8 @@ class IntArray(Tag):
             f.write(struct.pack('>i', i))
 # 0x0C
 class LongArray(Tag):
-    def __init__(self):
-        self.id = ID_LONG_ARRAY
-        self.value = []
+    def __init__(self, value = []):
+        Tag.__init__(self, ID_LONG_ARRAY, value)
 
     def read(self, f):
         self.value = []
