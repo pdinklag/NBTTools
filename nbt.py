@@ -32,6 +32,12 @@ def write_str(f, str):
 
 # base
 class Tag:
+    def __str__(self):
+        return type(self).__name__ + '(' + str(self.value) + ')'
+
+    def __repr__(self):
+        return self.__str__()
+
     def get(self, path):
         if len(path) > 0:
             raise NBTException('tag is not a container')
@@ -45,6 +51,9 @@ class Tag:
 class End(Tag):
     def __init__(self):
         self.id = ID_END
+
+    def __str__(self):
+        return 'End()'
 
     def read(self, f):
         pass
