@@ -232,6 +232,13 @@ class Compound(Tag):
         else:
             return self
 
+    def set(self, name, tag):
+        self.value[name] = tag
+
+    def remove(self, name):
+        if name in self.value:
+            del self.value[name]
+
     def dump(self):
         data = {}
         for name, item in self.value.items():
