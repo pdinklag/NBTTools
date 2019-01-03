@@ -32,6 +32,12 @@ def write_str(f, str):
 
 # base
 class Tag:
+    def get(self, path):
+        if len(path) > 0:
+            raise NBTException('tag is not a container')
+        else:
+            return self
+
     def dump(self):
         return self.value
 
@@ -181,6 +187,16 @@ class List(Tag):
         for tag in self.value:
             tag.write(f)
 
+    def get(self, path):
+        if len(path) > 0:
+            index = path[0]
+            if index < len(self.value):
+                return self.value[index].get(path[1:])
+            else:
+                return False
+        else:
+            return self
+
     def dump(self):
         data = []
         for item in self.value:
@@ -209,6 +225,16 @@ class Compound(Tag):
             write(f, item)
 
         write(f, End())
+
+    def get(self, path):
+        if len(path) > 0:
+            name = path[0]
+            if name in self.value:
+                return self.value[name].get(path[1:])
+            else:
+                return False
+        else:
+            return self
 
     def dump(self):
         data = {}
