@@ -223,6 +223,9 @@ class Compound(Tag):
         write(f, End())
 
     def get(self, path):
+        if isinstance(path, str):
+            path = [path] # wrap into list for convenience!
+
         if len(path) > 0:
             name = path[0]
             if name in self.value:
