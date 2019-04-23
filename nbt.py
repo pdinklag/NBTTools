@@ -25,10 +25,12 @@ def read_str(f):
         return ''
 
 def write_str(f, str):
-    strlen = len(str)
+    str8 = str.encode('utf-8')
+    strlen = len(str8)
+
     f.write(struct.pack('>h', strlen))
     if strlen > 0:
-        f.write(str.encode('utf-8'))
+        f.write(str8)
 
 # base
 class Tag:
