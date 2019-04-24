@@ -80,7 +80,7 @@ for filename in os.listdir(old_playerdata_dir):
         player.set('foodSaturationLevel', nbt.Float(5.0)) # default
         player.set('foodTickTimer', nbt.Int(0))
         player.set('Health', nbt.Float(20.0))
-        player.set('Invulnerable', nbt.Byte(1))
+        player.set('Invulnerable', nbt.Byte(0))
         player.set('Motion', nbt.List(nbt.ID_DOUBLE,
             [nbt.Double(0.0), nbt.Double(0.0), nbt.Double(0.0)]))
         player.set('OnGround', nbt.Byte(1))
