@@ -1,13 +1,10 @@
 #!/usr/bin/python3
 
 import argparse
-import gzip
-import io
 import json
 import struct
-import zlib
 
-import nbt
+import mca
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Minecraft MCA dump')
@@ -35,20 +32,8 @@ with open(args.file, 'rb') as f:
     off = 4096 * (loc >> 8)
     f.seek(off)
     
-    # read chunk header
-    num  = struct.unpack('>i', f.read(4))[0] - 1
-    comp = struct.unpack('b', f.read(1))[0]
-    
-    # read and decompress chunk data
-    data = f.read(num)
-    if comp == 1:
-        data = gzip.decompress(data)
-    elif comp == 2:
-        data = zlib.decompress(data)
-    else:
-        print('unknown chunk compression scheme')
-        exit(1)
-    
-    with io.BytesIO(data) as fdata:
-        chunk = nbt.read(fdata)[0]
+    chunk = mca.Region.read_chunk(f)
+    if chunk:
         print(json.dumps(chunk.dump(), indent=4, sort_keys=True))
+    else:
+        print('failed to read chunk')
